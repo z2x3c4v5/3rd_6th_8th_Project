@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Meet My Friends · 3학년 6~8단원</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+
+<header class="top">
+  <div class="title">
+    <h1>Meet My <span>Friends!</span></h1>
+    <p>새 친구 10명을 만나 묻고 답해요 · 기분 · 나이 · 가방 · 할 수 있는 일</p>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t-meet" aria-selected="true" aria-controls="meet">👫 친구 만나기</button>
+    <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="quiz">🔍 누구일까요?</button>
+    <button class="tab" role="tab" id="t-words" aria-selected="false" aria-controls="words">📖 주요 표현</button>
+  </nav>
+</header>
+
+<main>
+  <!-- ========== 1. 친구 만나기 ========== -->
+  <section id="meet" role="tabpanel" aria-labelledby="t-meet">
+    <div id="grid-view">
+      <div class="bar">
+        <p class="lead">친구 카드를 눌러 보세요! 질문을 하고 <b>?</b> 카드를 누르면 친구가 대답해요.</p>
+        <div class="bar-r">
+          <span class="met" id="met"></span>
+          <button class="btn ghost" id="shuffle">🎲 새 친구 10명</button>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div id="profile" hidden>
+      <div class="bar">
+        <button class="btn ghost" id="back">← 친구 목록</button>
+        <div class="bar-r">
+          <button class="btn ghost" id="prev" aria-label="이전 친구">◀</button>
+          <span class="met" id="pos"></span>
+          <button class="btn ghost" id="next" aria-label="다음 친구">▶</button>
+        </div>
+      </div>
+      <div class="pf" id="pf"></div>
+    </div>
+  </section>
+
+  <!-- ========== 2. 누구일까요? ========== -->
+  <section id="quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
+    <div class="bar">
+      <p class="lead">친구가 자기 이야기를 해요. <b>힌트</b>를 듣고 누구인지 맞혀 보세요! 힌트를 적게 쓸수록 ⭐ 가 많아요.</p>
+      <div class="bar-r"><span class="met" id="score"></span></div>
+    </div>
+    <div class="qz" id="qz"></div>
+  </section>
+
+  <!-- ========== 3. 주요 표현 ========== -->
+  <section id="words" role="tabpanel" aria-labelledby="t-words" hidden>
+    <p class="lead">문장을 누르면 들려줘요. 🎤 를 누르고 따라 말하면 정확도를 알려 줘요.</p>
+    <div class="wd" id="wd"></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <label class="rate">🐢 말하기 속도 <input type="range" id="rate" min="0.5" max="1.1" step="0.05" value="0.8"> 🐇</label>
+  <span id="sr-warn" hidden>🎤 따라 말하기는 크롬/엣지에서 할 수 있어요.</span>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="pics.js"></script>
+<script src="data.js"></script>
+<script src="avatar.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
