@@ -269,3 +269,32 @@ main { padding-top: 16px; padding-bottom: 24px; }
   .ask-ava { width: 110px; }
   .ask-say .tag b { font-size: 1.4rem; }
 }
+
+/* ---------- 💚 내 AI 친구 ---------- */
+#mine { margin-bottom: 16px; }
+.mine-empty { background: #f0fff4; border: 2px dashed #8ce99a; border-radius: 18px; padding: 12px 16px; font-size: 1.05rem; }
+.mine-empty b { color: var(--green); }
+.mine-card { display: grid; grid-template-columns: 200px 1fr; gap: 18px; background: #fff; border-radius: 24px; padding: 16px 18px; box-shadow: var(--shadow); border: 3px solid #8ce99a; }
+.mine-l { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.mine-ava { width: 180px; }
+.mine-ava svg { width: 100%; height: auto; }
+.mine-tag { background: var(--green); color: #fff; border-radius: 999px; padding: 4px 14px; }
+.mine-r h3 { margin: 0 0 8px; font-weight: 400; font-size: 1.3rem; }
+.mine-r h3 small { color: var(--muted); font-size: .9rem; margin-left: 6px; }
+.mine-t { width: 100%; border-collapse: collapse; font-size: 1rem; }
+.mine-t th, .mine-t td { border: 1px solid #e3e8ef; padding: 5px 10px; text-align: left; vertical-align: middle; }
+.mine-t thead th { background: #f4f6fa; font-weight: 400; text-align: center; }
+.mine-t tbody th { background: #f8f9fb; font-weight: 400; white-space: nowrap; width: 1%; }
+.mine-t td.w { font-family: var(--en); font-weight: 600; font-size: 1.1rem; white-space: nowrap; }
+.mine-t td.w small { color: var(--muted); font-weight: 500; }
+.mine-t td.s { font-family: var(--en); font-size: 1.1rem; }
+.mi svg { width: 22px; height: 22px; vertical-align: -5px; margin-right: 4px; }
+.badge.mine { background: #d3f9d8; }
+.choose { margin-top: 10px; }
+.chosen { display: inline-block; background: #d3f9d8; color: #2b8a3e; border-radius: 999px; padding: 6px 14px; }
+.btn.pick-me { background: var(--green); box-shadow: 0 5px 0 #2b9348; }
+@media (max-width: 760px) {
+  .mine-card { grid-template-columns: 1fr; }
+  .mine-ava { width: 130px; }
+  .mine-t td.w { white-space: normal; }
+}

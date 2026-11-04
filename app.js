@@ -40,6 +40,22 @@ function makeFriends() {
 let friends = store.get("friends-v2", null);
 if (!Array.isArray(friends) || friends.length !== COUNT) { friends = makeFriends(); }
 const save = () => store.set("friends-v2", friends);
+
+/* ---------- 💚 내 AI 친구 (이 기기에 계속 남아요) ---------- */
+let myFriend = store.get("my-friend-v1", null);
+const sigOf = f => [f.name, f.gender, f.mood, f.age, f.items.join(), f.actions.join(), f.look.kid].join("|");
+const isMine = f => !!myFriend && sigOf(myFriend) === sigOf(f);
+function chooseFriend(f) {
+  if (myFriend && !isMine(f) && !confirm(`내 AI 친구를 ${myFriend.name}에서 ${f.name}(으)로 바꿀까요?`)) return false;
+  const { name, gender, mood, age, items, actions, look } = f;
+  myFriend = { name, gender, mood, age, items: items.slice(), actions: actions.slice(), look: { ...look }, at: Date.now() };
+  store.set("my-friend-v1", myFriend);
+  // 고른 친구는 모든 정보가 보여요
+  f.seen.hi = f.seen.mood = f.seen.age = true;
+  f.items.forEach(i => f.seen.asked.includes(i) || f.seen.asked.push(i));
+  f.actions.forEach(a => f.seen.askedCan.includes(a) || f.seen.askedCan.push(a));
+  save(); return true;
+}
 save();
 
 // 화면에 쓰기 편하게 풀어 둔 친구
@@ -190,6 +206,7 @@ function renderGrid() {
   $("grid-view").hidden = current !== null; $("profile").hidden = current === null;
   if (current !== null) return renderProfile();
   $("met").textContent = `🏅 다 알아본 친구 ${friends.filter(isDone).length} / ${COUNT}`;
+  renderMine();
   $("grid").innerHTML = friends.map(f => {
     const p = progress(f), F = full(f);
     return `<button class="card${isDone(f) ? " done" : ""}" data-id="${f.id}" type="button">
@@ -197,7 +214,7 @@ function renderGrid() {
       <span class="nm">${f.name}</span>
       <span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en}</span>
       <span class="dots">${["😊", "🎂", "🎒", "💪"].map((e, i) => `<i class="${p[i] ? "on" : ""}" title="${["기분", "나이", "가방", "할 수 있는 일"][i]}">${e}</i>`).join("")}</span>
-      ${isDone(f) ? `<span class="badge">✓</span>` : ""}
+      ${isMine(f) ? `<span class="badge mine">💚</span>` : isDone(f) ? `<span class="badge">✓</span>` : ""}
     </button>`;
   }).join("");
   $("grid").querySelectorAll(".card").forEach(c => c.addEventListener("click", () => openFriend(+c.dataset.id)));
@@ -208,11 +225,34 @@ function openFriend(id) {
   speak([{ text: SAY.nameQ(), who: null }, { text: SAY.hi(f), who: f }]);
   if (!f.seen.hi) { f.seen.hi = true; save(); }
 }
+function renderMine() {
+  const box = $("mine");
+  if (!myFriend) {
+    box.innerHTML = `<div class="mine-empty">💚 친구를 만나 보고 마음에 드는 친구를 <b>내 AI 친구</b>로 선택해요! 선택한 친구는 이 기기에 계속 저장돼요.</div>`;
+    return;
+  }
+  const F = full(myFriend);
+  const rowsHTML = [
+    ["이름", `${F.name} <small>${GENDER[F.gender].emoji} ${GENDER[F.gender].en}</small>`, SAY.hi(F)],
+    ["나이", `${F.age.en} <small>(${F.age.n})</small>`, SAY.ageA(F)],
+    ["기분", `${F.mood.en} ${F.mood.emoji}`, SAY.moodA(F)],
+    ...F.items.map((it, i) => [`물건 ${i + 1}`, `<span class="mi">${ITEM_PICS[it.id]}</span>${it.en}`, `I have ${withArt(it)}.`]),
+    ...F.actions.map((a, i) => [`할 수 있는 일 ${i + 1}`, `${a.emoji} ${a.en}`, `I can ${a.en}.`]),
+  ].map(([k, w, t]) => `<tr><th>${k}</th><td class="w">${w}</td><td class="s">${esc(t)}</td></tr>`).join("");
+  box.innerHTML = `<article class="mine-card">
+    <div class="mine-l"><div class="mine-ava">${avatarSVG(myFriend, myFriend.mood)}</div>
+      <div class="mine-tag">💚 내 AI 친구</div>
+      <button class="btn" id="mine-say" type="button">🔊 자기소개 듣기</button></div>
+    <div class="mine-r"><h3>💚 ${F.name}의 기록 <small>워크시트 1쪽에 적어요</small></h3>
+      <table class="mine-t"><thead><tr><th></th><th>단어</th><th>문장</th></tr></thead><tbody>${rowsHTML}</tbody></table></div>
+  </article>`;
+  $("mine-say").addEventListener("click", () => speak(SAY.intro(F).map(text => ({ text, who: myFriend }))));
+}
 $("back").addEventListener("click", () => { current = null; speechSynthesis.cancel(); renderGrid(); });
 $("prev").addEventListener("click", () => openFriend((current + COUNT - 1) % COUNT));
 $("next").addEventListener("click", () => openFriend((current + 1) % COUNT));
 $("shuffle").addEventListener("click", () => {
-  if (!confirm("새 친구 10명을 만들까요? 지금 친구들은 사라져요.")) return;
+  if (!confirm("새 친구 10명을 만들까요? 지금 친구들은 사라져요. (💚 내 AI 친구는 그대로 남아요)")) return;
   friends = makeFriends(); save(); renderGrid(); toast("🎲 새 친구 10명이 왔어요!");
 });
 
@@ -239,6 +279,8 @@ function renderProfile() {
       <div class="who">
         <div class="tag"><b>${f.name}</b><span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en} · ${GENDER[f.gender].ko}</span></div>
         <div class="chat">${line(SAY.nameQ(), KO.nameQ, null, "q")}${line(SAY.hi(f), KO.hi(f), f, "a")}</div>
+        <div class="choose">${isMine(f) ? `<span class="chosen">💚 내 AI 친구로 선택했어요! (이 기기에 저장돼요)</span>`
+          : `<button class="btn big pick-me" id="pick-me" type="button">💚 이 친구를 내 AI 친구로 선택하기</button>`}</div>
       </div>
     </div>
 
@@ -307,6 +349,11 @@ function renderProfile() {
     afterFind(f);
   }));
   const ia = $("intro-all"); if (ia) ia.addEventListener("click", () => speak(SAY.intro(F).map(text => ({ text, who: f }))));
+  const pm = $("pick-me"); if (pm) pm.addEventListener("click", () => {
+    if (!chooseFriend(f)) return;
+    renderProfile(); cheer(); toast(`💚 ${f.name}(이)가 내 AI 친구가 되었어요! 친구 목록 맨 위에서 기록을 볼 수 있어요.`);
+    speak([{ text: SAY.hi(f), who: f }]);
+  });
   const gp = $("go-practice"); if (gp) gp.addEventListener("click", () => {
     const n = addPractice(SAY.intro(F).map(text => ({ text, ko: "", who: f })));
     window.scrollTo({ top: 0 }); showTab("quiz");
