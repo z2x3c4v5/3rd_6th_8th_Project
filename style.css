@@ -368,3 +368,10 @@ main { padding-top: 16px; padding-bottom: 24px; }
 .wbub b { font-family: var(--en); font-size: 1.3rem; color: #ffe066; white-space: nowrap; }
 .wbub span { font-family: var(--ko); }
 .wb-say { border: 0; background: #fff; border-radius: 50%; width: 32px; height: 32px; flex: none; cursor: pointer; }
+
+/* ---------- 앱 안 확인 창 ---------- */
+.ask-modal { position: fixed; inset: 0; z-index: 60; background: rgba(30, 30, 50, .45); display: grid; place-items: center; padding: 16px; animation: pop .15s ease; }
+.ask-card { background: #fff; border-radius: 22px; padding: 22px 20px 18px; max-width: 420px; width: 100%; box-shadow: var(--shadow); text-align: center; font-size: 1.15rem; line-height: 1.5; }
+.ask-card p { margin: 0 0 16px; }
+.ask-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.ver { font-size: .85rem; color: #a3a8b8; }

@@ -54,7 +54,7 @@ let choosing = false;   // 🔄 새로운 친구 선택하기를 누른 뒤에�
 const sigOf = f => [f.name, f.gender, f.mood, f.age, f.items.join(), f.actions.join(), f.look.kid].join("|");
 const isMine = f => !!myFriend && sigOf(myFriend) === sigOf(f);
 function chooseFriend(f) {
-  if (myFriend && !isMine(f) && !choosing && !confirm(`내 AI 친구를 ${myFriend.name}에서 ${f.name}(으)로 바꿀까요?`)) return false;
+  // 브라우저 확인 창(confirm)은 태블릿 앱 속 브라우저에서 저절로 닫혀 선택이 취소될 수 있어서 쓰지 않아요
   choosing = false;
   const { name, gender, mood, age, items, actions, look } = f;
   myFriend = { name, gender, mood, age, items: items.slice(), actions: actions.slice(), look: { ...look }, at: Date.now() };
@@ -160,6 +160,20 @@ function listen(line, text, onScore) {
   };
   rec.onend = () => { mic.classList.remove("on"); rec = null; };
   try { rec.start(); } catch (e) { mic.classList.remove("on"); }
+}
+// 앱 안의 확인 창 (브라우저 confirm 대신) — 눌러야만 닫혀요
+function askBox(msg, yes = "네", no = "아니요") {
+  return new Promise(resolve => {
+    const box = document.createElement("div");
+    box.className = "ask-modal";
+    box.innerHTML = `<div class="ask-card" role="dialog" aria-modal="true"><p>${msg}</p>
+      <div class="ask-btns"><button class="btn ghost" data-v="0" type="button">${no}</button><button class="btn big" data-v="1" type="button">${yes}</button></div></div>`;
+    document.body.appendChild(box);
+    const done = v => { box.remove(); resolve(v); };
+    box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => done(b.dataset.v === "1")));
+    box.addEventListener("click", e => { if (e.target === box) done(false); });
+    box.querySelector('[data-v="1"]').focus();
+  });
 }
 const hush = () => { try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch (e) {} };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -335,8 +349,8 @@ function renderMine() {
 $("back").addEventListener("click", () => { current = null; hush(); renderGrid(); });
 $("prev").addEventListener("click", () => openFriend((current + COUNT - 1) % COUNT));
 $("next").addEventListener("click", () => openFriend((current + 1) % COUNT));
-$("shuffle").addEventListener("click", () => {
-  if (!confirm("새 친구 20명을 만들까요? 지금 친구들은 사라져요. (💚 내 AI 친구는 그대로 남아요)")) return;
+$("shuffle").addEventListener("click", async () => {
+  if (!(await askBox("새 친구 20명을 만들까요?<br>지금 친구들은 사라져요. (💚 내 AI 친구는 그대로 남아요)", "새 친구 만들기"))) return;
   friends = makeFriends(); save(); renderGrid(); toast("🎲 새 친구 20명이 왔어요!");
 });
 
@@ -364,7 +378,7 @@ function renderProfile() {
         <div class="tag"><button class="say-name big-name" id="pf-name" type="button" aria-label="${f.name} 이름 듣기">🔊 ${f.name}</button><span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en} · ${GENDER[f.gender].ko}</span></div>
         <div class="chat">${line(SAY.nameQ(), KO.nameQ, null, "q")}${line(SAY.hi(f), KO.hi(f), f, "a")}</div>
         <div class="choose">${isMine(f) ? `<span class="chosen">💚 내 AI 친구예요!</span> <button class="btn" id="see-my" type="button">💚 내 AI 친구 보기</button>`
-          : `<button class="btn big pick-me" id="pick-me" type="button">💚 ${myFriend && !choosing ? "이 친구로 바꾸기" : "내 AI 친구로 선택하기"}</button>`}</div>
+          : `<button class="btn big pick-me" id="pick-me" type="button">💚 ${myFriend ? "이 친구로 바꾸기" : "내 AI 친구로 선택하기"}</button>`}</div>
       </div>
     </div>
 
@@ -446,8 +460,8 @@ function renderProfile() {
     window.scrollTo({ top: 0 }); showTab("quiz");
     toast(n ? `⭐ ${f.name}의 자기소개 ${n}문장을 담았어요!` : "자기소개 문장이 이미 담겨 있어요.");
   });
-  $("show-all").addEventListener("click", () => {
-    if (!confirm(`${f.name}의 정답을 모두 볼까요?`)) return;
+  $("show-all").addEventListener("click", async () => {
+    if (!(await askBox(`${f.name}의 정답을 모두 볼까요?`, "모두 보기"))) return;
     f.seen.mood = f.seen.age = true;
     f.items.forEach(i => f.seen.asked.includes(i) || f.seen.asked.push(i));
     f.actions.forEach(a => f.seen.askedCan.includes(a) || f.seen.askedCan.push(a));
@@ -504,7 +518,7 @@ function renderQuiz() {
     el.querySelector(".del").addEventListener("click", () => { practice.splice(practice.indexOf(p), 1); savePractice(); renderQuiz(); });
   });
   $("pr-all").addEventListener("click", () => speak(practice.map(p => ({ text: p.text, who: p.gender ? { gender: p.gender } : null }))));
-  $("pr-clear").addEventListener("click", () => { if (confirm("담은 문장을 모두 지울까요?")) { practice = []; savePractice(); renderQuiz(); } });
+  $("pr-clear").addEventListener("click", async () => { if (await askBox("담은 문장을 모두 지울까요?", "모두 지우기")) { practice = []; savePractice(); renderQuiz(); } });
 }
 
 /* =========================================================
