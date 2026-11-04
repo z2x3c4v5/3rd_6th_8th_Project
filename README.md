@@ -51,8 +51,8 @@
 ## 워크시트 (`worksheet/worksheet_MeetMyFriends.hwpx`, 2쪽)
 
 Lesson 7 Survey 워크시트와 같은 글꼴·표·4선 칸으로 만들었어요.
-1. **1쪽 — 내 AI 친구 소개하기** : 앱에서 선택한 내 AI 친구의 이름·나이·기분·물건 3개·할 수 있는 일 3가지를 단어(4선 칸)와 문장(`Hi, I'm` · `I'm ___ years old.` · `I'm` · `I have a` · `I can`)으로 적고, 얼굴을 그린 뒤 자기소개를 완성해요.
-2. **2쪽 — 친구들의 AI 친구 만나기** : 반 친구를 만나 그 친구의 AI 친구에게 질문(What's your name? · How old are you? · How are you today? · Do you have a ___? · Can you ___?)하고 9명까지 표에 적어요.
+1. **1쪽 — 내 AI 친구 소개하기** : 앱에서 선택한 내 AI 친구의 이름·나이·기분·물건 3개·할 수 있는 일 3가지를 단어와 문장(`Hi, I'm` · `I'm ___ years old.` · `I'm` · `I have a` · `I can`)을 영어 4선 칸에 적고, 얼굴을 그린 뒤 옆의 4선 칸에 자기소개를 써요.
+2. **2쪽 — 친구들의 AI 친구 만나기** : 반 친구를 만나 그 친구의 AI 친구에게 질문(What's your name? · How old are you? · How are you today? · Do you have a ___? · Can you ___?)하고 9명까지 표의 영어 4선 칸에 적어요.
 
 `tools/make_worksheet.py` 로 다시 만들 수 있어요.
 

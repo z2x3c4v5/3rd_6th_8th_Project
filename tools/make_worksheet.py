@@ -73,23 +73,28 @@ rows = [[cell(0, 0, W[0], 1582, 16, [P([(20, "")], 27)]),
 items = [("이름", "Hi, I'm"), ("나이", "I'm            years old."), ("기분", "I'm"),
          ("물건 1", "I have a"), ("물건 2", "I have a"), ("물건 3", "I have a"),
          (["할 수 있는", "일 1"], "I can"), (["할 수 있는", "일 2"], "I can"), (["할 수 있는", "일 3"], "I can")]
-H = 3806
+H = 3650
 for i, (lab, sent) in enumerate(items, start=1):
     labp = [P([(32, lab)], 31)] if isinstance(lab, str) else [P([(26, x)], 31) for x in lab]
     rows.append([cell(0, i, W[0], H, 17, labp),
                  cell(1, i, W[1], H, 4, [P([(13, "", fresh(C_WORD))], 31)]),
                  cell(2, i, W[2], H, 9, [P([(34, sent, fresh(C_SENT))], 32)])])
 out_p.append(tblP(table(rows, 3, sum(W), 1582 + H * len(items))))
-out_p.append(P([(8, "")], para=22))
-out_p.append(P([(28, "2. 내 AI 친구의 얼굴을 그리고, 내 AI 친구가 되어 자기소개를 완성해 봅시다.")], para=23))
-W2 = [15500, 39175]
-intro = ["Hi, I'm ________________.", "I'm __________ years old.", "I'm __________ today.",
-         "I have a __________,", "     a __________ and a __________.", "I can __________, __________", "     and __________."]
+out_p.append(P([(28, "2. 내 AI 친구의 얼굴을 그리고, 내 AI 친구가 되어 자기소개를 영어 칸에 써 봅시다.")], para=23))
+out_p.append(P([(28, "   (물건 3개와 할 수 있는 일 3가지는 위의 표에서 순서대로 옮겨 써요.)")], para=23))
+W2 = [21177, 33498]          # 오른쪽은 1번 표 문장 칸과 같은 너비 (4선 칸이 꼭 맞아요)
+intro = ["Hi, I'm", "I'm            years old.", "I'm            today.", "I have a", "a                    and a",
+         "I can", "and"]
+HI = 3500
 rows2 = [[cell(0, 0, W2[0], 1582, 16, [P([(20, "내 AI 친구 얼굴")], 27)]),
-          cell(1, 0, W2[1], 1582, 15, [P([(20, "자기소개 (다 쓰면 소리 내어 읽어 봐요!)")], 27)])],
-         [cell(0, 1, W2[0], 17000, 17, [P([(20, "")], 27)]),
-          cell(1, 1, W2[1], 17000, 9, [P([(37, t)], 33) for t in intro])]]
-out_p.append(tblP(table(rows2, 2, sum(W2), 1582 + 17000)))
+          cell(1, 0, W2[1], 1582, 15, [P([(20, "자기소개 (다 쓰면 소리 내어 읽어 봐요!)")], 27)])]]
+for i, t in enumerate(intro, start=1):
+    r = []
+    if i == 1:
+        r.append(cell(0, 1, W2[0], HI * len(intro), 18, [P([(20, "")], 27)], rs=len(intro)))
+    r.append(cell(1, i, W2[1], HI, 13 if i == len(intro) else 9, [P([(34, t, fresh(C_SENT))], 32)]))
+    rows2.append(r)
+out_p.append(tblP(table(rows2, 2, sum(W2), 1582 + HI * len(intro))))
 
 # ================= 2쪽: 친구들의 AI 친구 =================
 out_p.append(header("- 친구들의 AI 친구를 만나 묻고 답해 보기 -", page_break=True))
@@ -104,17 +109,21 @@ rowsq = [[cell(0, 0, WQ[0], 3000, 6, [P([(24, "질문")], 30)]),
                                        P([(35, "Yes, I do. / No, I don't.        Yes, I can. / No, I can't.")], 33)])]]
 out_p.append(tblP(table(rowsq, 2, sum(WQ), 6000)))
 out_p.append(P([(8, "")], para=22))
-WM = [2600, 7400, 7900, 6800, 7600, 11245, 11245]
-heads = [("번호", ""), ("반 친구 이름", ""), ("AI 친구 이름", "What's your name?"), ("나이", "How old are you?"),
+WM = [3925] + [10173] * 5     # 원래 Survey 표와 같은 너비 (4선 칸이 꼭 맞아요)
+heads = [(["반 친구", "이름"], ""), ("AI 친구 이름", "What's your name?"), ("나이", "How old are you?"),
          ("기분", "How are you today?"), ("가지고 있는 물건", "Do you have a ___?"), ("할 수 있는 일", "Can you ___?")]
 HB = 3400
-bfh = [16] + [14] * 5 + [15]
-rowsm = [[cell(c, 0, WM[c], HB, bfh[c], [P([(24, k)], 27)] + ([P([(26, e)], 27)] if e else []))
-          for c, (k, e) in enumerate(heads)]]
-NR, HR = 9, 4200
+bfh = [16] + [14] * 4 + [15]
+def head_cell(c, k, e):
+    ps = [P([(26, x)], 27) for x in k] if isinstance(k, list) else [P([(24, k)], 27)]
+    return cell(c, 0, WM[c], HB, bfh[c], ps + ([P([(26, e)], 27)] if e else []))
+rowsm = [[head_cell(c, k, e) for c, (k, e) in enumerate(heads)]]
+NR, HR = 9, 4100
 for r in range(1, NR + 1):
-    rowsm.append([cell(0, r, WM[0], HR, 17, [P([(32, str(r))], 31)])] +
-                 [cell(c, r, WM[c], HR, 9 if c == len(WM) - 1 else 4, [P([(13, "")], 31)]) for c in range(1, len(WM))])
+    last = r == NR
+    rowsm.append([cell(0, r, WM[0], HR, 18 if last else 17, [P([(12, "")], 27)])] +
+                 [cell(c, r, WM[c], HR, (13 if last else 9) if c == len(WM) - 1 else (12 if last else 4),
+                       [P([(11, "", fresh(C_SMALL))], 26)]) for c in range(1, len(WM))])
 out_p.append(tblP(table(rowsm, len(WM), sum(WM), HB + HR * NR)))
 
 xml = head + "".join(out_p) + "</hs:sec>"
