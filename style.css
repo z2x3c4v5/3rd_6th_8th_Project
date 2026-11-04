@@ -236,3 +236,36 @@ main { padding-top: 16px; padding-bottom: 24px; }
 /* Canva 친구 그림 (표정 6칸 중 한 칸만 보여 줘요) */
 .kid { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 3px #f1ecfb; }
 .kid img { position: absolute; max-width: none; height: auto; user-select: none; }
+
+/* ---------- 친구한테 묻기 ---------- */
+.wd { display: block; }
+.ask-who h3, .ask-h { margin: 6px 0 8px; font-weight: 400; font-size: 1.2rem; }
+.ask-friends { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; }
+.af { border: 3px solid transparent; background: #fff; border-radius: 16px; padding: 6px 4px; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; gap: 2px; font-family: var(--en); font-weight: 600; }
+.af .ava { width: 100%; max-width: 70px; aspect-ratio: 1; }
+.af .ava svg { width: 100%; height: 100%; }
+.af.on { border-color: var(--pink); background: #fff0f6; }
+.ask-stage { position: sticky; top: 8px; z-index: 5; display: grid; grid-template-columns: 150px 1fr; gap: 16px; align-items: center; background: #fff; border-radius: 24px; padding: 14px 18px; box-shadow: var(--shadow); margin: 16px 0; border: 3px solid #ffd6e7; }
+.ask-ava { width: 150px; animation: pop .35s ease; }
+.ask-ava svg { width: 100%; height: auto; }
+.ask-say .tag b { font-size: 1.8rem; }
+.ask-say .big-emoji { font-size: 2.2rem; text-align: left; margin-top: 4px; }
+.ask-say .line.a { margin-left: 0; }
+.ask-qs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ask-q { display: flex; flex-direction: column; gap: 8px; border-top-color: var(--sky); }
+.ask-q.q-name { border-top-color: #ffc93c; } .ask-q.q-age { border-top-color: #ff7eb3; } .ask-q.q-mood { border-top-color: #ffa94d; }
+.ask-q.q-have, .ask-q.q-can { grid-column: span 3; }
+.ask-q.q-have { border-top-color: #4dabf7; } .ask-q.q-can { border-top-color: #38d9a9; }
+.ask-q .line.q { margin-right: 0; }
+.qn { width: 28px; height: 28px; border-radius: 50%; background: var(--purple); color: #fff; display: inline-grid; place-items: center; font-family: var(--en); font-size: .95rem; }
+.pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+.pick .ch.sel { border-color: var(--pink); background: #fff0f6; box-shadow: 0 0 0 2px #ffc2d9; }
+.ask-go { align-self: flex-end; margin-top: auto; }
+@media (max-width: 960px) { .ask-friends { grid-template-columns: repeat(5, 1fr); } .ask-qs { grid-template-columns: 1fr; } .ask-q.q-have, .ask-q.q-can { grid-column: auto; } }
+@media (max-width: 760px) {
+  .ask-stage { grid-template-columns: 1fr; justify-items: center; gap: 8px; padding: 12px; position: static; }
+  .ask-say { width: 100%; }
+  .ask-say .tag { justify-content: center; }
+  .ask-ava { width: 110px; }
+  .ask-say .tag b { font-size: 1.4rem; }
+}
