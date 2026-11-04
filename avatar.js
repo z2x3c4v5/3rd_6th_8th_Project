@@ -89,11 +89,11 @@ function faceParts(mood) {
 }
 
 /* ===== Canva 로 만든 친구 그림 =====
- * img/sheets/kid1.jpg ~ kid10.jpg (kid1~5 남자, kid6~10 여자)
+ * img/sheets/kid1.jpg ~ kid20.jpg (kid1~5·11~15 남자, kid6~10·16~20 여자)
  * 한 장에 표정 6개 (3칸 × 2줄): 위 = 기본 · happy · sad / 아래 = angry · hungry · tired
  * 파일이 있으면 그 그림을, 없으면 아래 SVG 얼굴을 써요.
  */
-const KIDS = { boy: [1, 2, 3, 4, 5], girl: [6, 7, 8, 9, 10] };
+const KIDS = { boy: [1, 2, 3, 4, 5, 11, 12, 13, 14, 15], girl: [6, 7, 8, 9, 10, 16, 17, 18, 19, 20] };
 const MOOD_CELL = { neutral: [0, 0], happy: [1, 0], sad: [2, 0], angry: [0, 1], hungry: [1, 1], tired: [2, 1] };
 const ZOOM = 1.08;       // 칸 테두리가 보이지 않게 살짝 확대
 let KID_EXT = null;      // "jpg" | "png" — 그림 파일을 찾으면 정해져요

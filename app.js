@@ -14,14 +14,14 @@ const ageByN = Object.fromEntries(AGES.map(x => [x.n, x]));
 document.body.insertAdjacentHTML("afterbegin",
   `<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden"><defs>${ITEM_DEFS}</defs></svg>`);
 
-/* ---------- 친구 10명 만들기 ---------- */
-const COUNT = 10, CHOICES = 9;
+/* ---------- 친구 20명 만들기 ---------- */
+const COUNT = 20, CHOICES = 9;   // 친구 20명 (남자 10 · 여자 10)
 function makeFriends() {
   const genders = shuffle(Array(COUNT / 2).fill("boy").concat(Array(COUNT / 2).fill("girl")));
   const names = { boy: shuffle(NAMES.boy), girl: shuffle(NAMES.girl) };
-  const moods = shuffle(MOODS.flatMap(m => [m.key, m.key]));       // 기분마다 2명씩
+  const moods = shuffle(MOODS.flatMap(m => Array(COUNT / MOODS.length).fill(m.key)));   // 기분마다 같은 수만큼 (4명씩)
   const used = new Set();
-  const kids = { boy: shuffle(KIDS.boy), girl: shuffle(KIDS.girl) };   // Canva 그림 10명을 한 명씩
+  const kids = { boy: shuffle(KIDS.boy), girl: shuffle(KIDS.girl) };   // Canva 그림 20명을 한 명씩 (겹치지 않아요)
   return genders.map((gender, i) => {
     const mood = moods[i % moods.length];
     let age; do { age = AGES[rnd(AGES.length)].n; } while (used.has(mood + age)); // 기분+나이가 같은 친구는 없어요
@@ -225,15 +225,27 @@ function renderGrid() {
   renderMyBar();
   $("grid").innerHTML = friends.map(f => {
     const p = progress(f), F = full(f);
-    return `<button class="card${isDone(f) ? " done" : ""}" data-id="${f.id}" type="button">
+    return `<div class="card${isDone(f) ? " done" : ""}" data-id="${f.id}" role="button" tabindex="0" aria-label="${f.name} 만나기">
       <span class="ava">${avatarSVG(f, f.seen.mood ? f.mood : null)}</span>
-      <span class="nm">${f.name}</span>
+      <button class="nm say-name" type="button" aria-label="${f.name} 이름 듣기">🔊 ${f.name}</button>
       <span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en}</span>
       <span class="dots">${["😊", "🎂", "🎒", "💪"].map((e, i) => `<i class="${p[i] ? "on" : ""}" title="${["기분", "나이", "가방", "할 수 있는 일"][i]}">${e}</i>`).join("")}</span>
       ${isMine(f) ? `<span class="badge mine">💚</span>` : isDone(f) ? `<span class="badge">✓</span>` : ""}
-    </button>`;
+    </div>`;
   }).join("");
-  $("grid").querySelectorAll(".card").forEach(c => c.addEventListener("click", () => openFriend(+c.dataset.id)));
+  $("grid").querySelectorAll(".card").forEach(c => {
+    const f = friends[+c.dataset.id];
+    c.addEventListener("click", e => {
+      const nb = e.target.closest(".say-name");
+      if (nb) { sayName(f, nb); return; }      // 이름을 누르면 이름만 들려줘요
+      openFriend(f.id);
+    });
+    c.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target === c) { e.preventDefault(); openFriend(f.id); } });
+  });
+}
+function sayName(f, el) {
+  speak([{ text: f.name, who: f }]);
+  if (el) { el.classList.remove("speaking"); void el.offsetWidth; el.classList.add("speaking"); }
 }
 function openFriend(id) {
   current = id; renderGrid(); window.scrollTo({ top: 0, behavior: "smooth" });
@@ -305,8 +317,8 @@ $("back").addEventListener("click", () => { current = null; hush(); renderGrid()
 $("prev").addEventListener("click", () => openFriend((current + COUNT - 1) % COUNT));
 $("next").addEventListener("click", () => openFriend((current + 1) % COUNT));
 $("shuffle").addEventListener("click", () => {
-  if (!confirm("새 친구 10명을 만들까요? 지금 친구들은 사라져요. (💚 내 AI 친구는 그대로 남아요)")) return;
-  friends = makeFriends(); save(); renderGrid(); toast("🎲 새 친구 10명이 왔어요!");
+  if (!confirm("새 친구 20명을 만들까요? 지금 친구들은 사라져요. (💚 내 AI 친구는 그대로 남아요)")) return;
+  friends = makeFriends(); save(); renderGrid(); toast("🎲 새 친구 20명이 왔어요!");
 });
 
 let lastBag = null, lastCan = null;   // 가장 최근에 물어본 것 (화면에 대화로 보여 줘요)
@@ -330,7 +342,7 @@ function renderProfile() {
     <div class="hero">
       <div class="big-ava ${f.seen.mood ? "m-" + f.mood : ""}">${avatarSVG(f, f.seen.mood ? f.mood : null)}</div>
       <div class="who">
-        <div class="tag"><b>${f.name}</b><span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en} · ${GENDER[f.gender].ko}</span></div>
+        <div class="tag"><button class="say-name big-name" id="pf-name" type="button" aria-label="${f.name} 이름 듣기">🔊 ${f.name}</button><span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en} · ${GENDER[f.gender].ko}</span></div>
         <div class="chat">${line(SAY.nameQ(), KO.nameQ, null, "q")}${line(SAY.hi(f), KO.hi(f), f, "a")}</div>
         <div class="choose">${isMine(f) ? `<span class="chosen">💚 내 AI 친구예요!</span> <button class="btn" id="see-my" type="button">💚 내 AI 친구 보기</button>`
           : `<button class="btn big pick-me" id="pick-me" type="button">💚 ${myFriend && !choosing ? "이 친구로 바꾸기" : "내 AI 친구로 선택하기"}</button>`}</div>
@@ -402,6 +414,7 @@ function renderProfile() {
     afterFind(f);
   }));
   const ia = $("intro-all"); if (ia) ia.addEventListener("click", () => speak(SAY.intro(F).map(text => ({ text, who: f }))));
+  $("pf-name").addEventListener("click", e => sayName(f, e.currentTarget));
   const pm = $("pick-me"); if (pm) pm.addEventListener("click", () => {
     if (!chooseFriend(f)) return;
     current = null; cheer(); showTab("my"); window.scrollTo({ top: 0 });

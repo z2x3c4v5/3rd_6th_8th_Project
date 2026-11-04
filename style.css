@@ -314,3 +314,14 @@ main { padding-top: 16px; padding-bottom: 24px; }
 .mine-intro .line.a { margin-left: 0; }
 .tabs .tab { white-space: nowrap; }
 @media (max-width: 760px) { .mb-btns { margin-left: 0; width: 100%; } .mb-btns .btn { flex: 1; } }
+
+/* ---------- 🔊 이름 듣기 ---------- */
+.card { cursor: pointer; }
+.card:focus-visible { outline: 4px solid var(--sky); }
+.say-name { border: 0; background: #f3f0fa; border-radius: 999px; padding: 4px 14px; cursor: pointer; font-family: var(--en); font-weight: 700; color: var(--ink); transition: background .15s, transform .1s; }
+.say-name:hover { background: #e5dbff; }
+.say-name:active { transform: scale(.95); }
+.card .nm.say-name { font-size: 1.35rem; line-height: 1.2; }
+.say-name.speaking { animation: namepop .6s ease; background: #ffe066; }
+.say-name.big-name { font-size: 2.1rem; color: var(--purple); background: #f3f0fa; padding: 4px 16px; }
+@keyframes namepop { 30% { transform: scale(1.12); } 100% { transform: scale(1); } }
