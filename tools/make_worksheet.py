@@ -52,11 +52,11 @@ def table(rows, ncols, width, height):
 
 def tblP(tbl): return P([(17, "", tbl)], para=22)
 
-def header(subtitle, first=False, page_break=False):
+def header(subtitle, first=False, page_break=False, secpr=None):
     title = "Lesson 6~8. Meet My Friends!"
     if first:
         t = (f'<hp:p id="0" paraPrIDRef="29" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'
-             f'<hp:run charPrIDRef="18">{secpr_run}</hp:run><hp:run charPrIDRef="18"><hp:t>{esc(title)}</hp:t></hp:run></hp:p>')
+             f'<hp:run charPrIDRef="18">{secpr or secpr_run}</hp:run><hp:run charPrIDRef="18"><hp:t>{esc(title)}</hp:t></hp:run></hp:p>')
     else:
         t = P([(18, title)], para=29, page_break=page_break)
     return (t + P([(33, subtitle)], para=29) + P([(7, "")], para=20)
@@ -96,46 +96,85 @@ for i, t in enumerate(intro, start=1):
     rows2.append(r)
 out_p.append(tblP(table(rows2, 2, sum(W2), 1582 + HI * len(intro))))
 
-# ================= 2쪽: 친구들의 AI 친구 =================
-out_p.append(header("- 친구들의 AI 친구를 만나 묻고 답해 보기 -", page_break=True))
-out_p.append(P([(28, "1. 친구들을 만나 친구의 AI 친구에게 영어로 질문하고, 알게 된 것을 적어 봅시다.")], para=23))
-out_p.append(P([(28, "   (가지고 있는 물건과 할 수 있는 일은 친구가 Yes 라고 대답한 것을 적어요.)")], para=23))
-WQ = [3925, 50865]
-rowsq = [[cell(0, 0, WQ[0], 3000, 6, [P([(24, "질문")], 30)]),
-          cell(1, 0, WQ[1], 3000, 7, [P([(15, "What's your name?    How old are you?    How are you today?")], 33),
-                                       P([(15, "Do you have a ________?    Can you ________?")], 33)])],
-         [cell(0, 1, WQ[0], 3000, 10, [P([(24, "대답")], 30)]),
-          cell(1, 1, WQ[1], 3000, 9, [P([(35, "Hi, I'm ____.    I'm ____ years old.    I'm happy / sad / angry / hungry / tired.")], 33),
-                                       P([(35, "Yes, I do. / No, I don't.        Yes, I can. / No, I can't.")], 33)])]]
-out_p.append(tblP(table(rowsq, 2, sum(WQ), 6000)))
-out_p.append(P([(8, "")], para=22))
-WM = [3925] + [10173] * 5     # 원래 Survey 표와 같은 너비 (4선 칸이 꼭 맞아요)
-heads = [(["반 친구", "이름"], ""), ("AI 친구 이름", "What's your name?"), ("나이", "How old are you?"),
-         ("기분", "How are you today?"), ("가지고 있는 물건", "Do you have a ___?"), ("할 수 있는 일", "Can you ___?")]
-HB = 3400
+# ================= 2쪽: 친구들의 AI 친구 (가로 방향, 새 구역) =================
+# 한글은 가로 용지를 landscape="NARROWLY" 로 적고, 너비·높이는 세로 기준(A4) 그대로 둬요.
+M2 = 2268   # 여백 8 mm
+secpr2 = re.sub(r'<hp:pagePr landscape="\w+"', '<hp:pagePr landscape="NARROWLY"', secpr_run)
+secpr2 = re.sub(r'<hp:margin header="0" footer="0" gutter="0" left="\d+" right="\d+" top="\d+" bottom="\d+"/>',
+                f'<hp:margin header="0" footer="0" gutter="0" left="{M2}" right="{M2}" top="{M2}" bottom="{M2}"/>', secpr2)
+TW2 = 84186 - 2 * M2        # 가로 쪽 본문 너비
+
+# 영어 4선 칸: 칸 너비에 맞게 늘어나는 작은 표 (줄 3칸 = 선 4개)
+BF_L = [19, 20, 21]         # header.xml 에 새로 넣는 테두리: 실선/실선, 실선/점선, 점선/실선 (회색)
+def four_lines(w, row_h=1050):
+    rows = [[cell(0, i, w, row_h, BF_L[i], [P([(11, "")], 26)])] for i in range(3)]
+    t = table(rows, 1, w, row_h * 3).replace('borderFillIDRef="4" noAdjust', 'borderFillIDRef="1" noAdjust')
+    t = t.replace('<hp:cellMargin left="510" right="510" top="141" bottom="141"/>', '<hp:cellMargin left="0" right="0" top="0" bottom="0"/>')
+    return t.replace('<hp:outMargin left="141" right="141" top="141" bottom="141"/>', '<hp:outMargin left="0" right="0" top="0" bottom="0"/>')
+
+p2 = [header("- 친구들의 AI 친구를 만나 묻고 답해 보기 -", first=True, secpr=secpr2)]
+p2.append(P([(28, "1. 친구들을 만나 친구의 AI 친구에게 영어로 질문하고, 알게 된 것을 영어 칸에 적어 봅시다. "
+                  "(가지고 있는 물건과 할 수 있는 일은 친구가 Yes 라고 대답한 것을 적어요.)")], para=23))
+WQ = [4000, 36000, 4000, TW2 - 44000]
+HQ = 5000
+rowsq = [[cell(0, 0, WQ[0], HQ, 6, [P([(24, "질문")], 30)]),
+          cell(1, 0, WQ[1], HQ, 14, [P([(15, "What's your name?     How old are you?")], 33),
+                                      P([(15, "How are you today?")], 33),
+                                      P([(15, "Do you have a ____?     Can you ____?")], 33)]),
+          cell(2, 0, WQ[2], HQ, 14, [P([(24, "대답")], 30)]),
+          cell(3, 0, WQ[3], HQ, 7, [P([(35, "Hi, I'm ____.     I'm ____ years old.")], 33),
+                                     P([(35, "I'm happy / sad / angry / hungry / tired.")], 33),
+                                     P([(35, "Yes, I do. / No, I don't.     Yes, I can. / No, I can't.")], 33)])]]
+p2.append(tblP(table(rowsq, 4, sum(WQ), HQ)))
+p2.append(P([(8, "")], para=22))
+C0 = 9650
+WM = [C0] + [(TW2 - C0) // 5] * 5
+WM[-1] += TW2 - sum(WM)
+heads = [("반 친구 이름", ""), ("AI 친구 이름", "What's your name?"), ("나이", "How old are you?"),
+         ("기분", "How are you today?"), ("가지고 있는 물건", "Do you have a ____?"), ("할 수 있는 일", "Can you ____?")]
+HB = 3200
 bfh = [16] + [14] * 4 + [15]
-def head_cell(c, k, e):
-    ps = [P([(26, x)], 27) for x in k] if isinstance(k, list) else [P([(24, k)], 27)]
-    return cell(c, 0, WM[c], HB, bfh[c], ps + ([P([(26, e)], 27)] if e else []))
-rowsm = [[head_cell(c, k, e) for c, (k, e) in enumerate(heads)]]
-NR, HR = 9, 4100
+rowsm = [[cell(c, 0, WM[c], HB, bfh[c], [P([(24, k)], 27)] + ([P([(26, e)], 27)] if e else [])) for c, (k, e) in enumerate(heads)]]
+NR, HR = 6, 5000
 for r in range(1, NR + 1):
     last = r == NR
     rowsm.append([cell(0, r, WM[0], HR, 18 if last else 17, [P([(12, "")], 27)])] +
                  [cell(c, r, WM[c], HR, (13 if last else 9) if c == len(WM) - 1 else (12 if last else 4),
-                       [P([(11, "", fresh(C_SMALL))], 26)]) for c in range(1, len(WM))])
-out_p.append(tblP(table(rowsm, len(WM), sum(WM), HB + HR * NR)))
+                       [P([(11, "", four_lines(WM[c] - 1020))], 27)]) for c in range(1, len(WM))])
+p2.append(tblP(table(rowsm, len(WM), sum(WM), HB + HR * NR)))
+xml1 = head + "".join(p2) + "</hs:sec>"
+files["Contents/section1.xml"] = xml1.encode("utf-8")
 
 xml = head + "".join(out_p) + "</hs:sec>"
 files["Contents/section0.xml"] = xml.encode("utf-8")
 files["Preview/PrvText.txt"] = "Lesson 6~8. Meet My Friends!\r\n- 웹 앱에서 내가 선택한 AI 친구를 소개해 보기 -\r\n- 친구들의 AI 친구를 만나 묻고 답해 보기 -\r\n".encode("utf-8")
 hpf = files["Contents/content.hpf"].decode("utf-8").replace("<opf:title>Lesson 5</opf:title>", "<opf:title>Meet My Friends</opf:title>")
+hpf = hpf.replace('<opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/>',
+                  '<opf:item id="section0" href="Contents/section0.xml" media-type="application/xml"/>'
+                  '<opf:item id="section1" href="Contents/section1.xml" media-type="application/xml"/>')
+hpf = hpf.replace('<opf:itemref idref="section0" linear="yes"/>', '<opf:itemref idref="section0" linear="yes"/><opf:itemref idref="section1" linear="yes"/>')
+hdr = files["Contents/header.xml"].decode("utf-8").replace('secCnt="1"', 'secCnt="2"')
+def bfill(i, top, bottom):
+    b = lambda side, t: f'<hh:{side}Border type="{t}" width="0.12 mm" color="#BFBFBF"/>'
+    return (f'<hh:borderFill id="{i}" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0">'
+            '<hh:slash type="NONE" Crooked="0" isCounter="0"/><hh:backSlash type="NONE" Crooked="0" isCounter="0"/>'
+            '<hh:leftBorder type="NONE" width="0.1 mm" color="#000000"/><hh:rightBorder type="NONE" width="0.1 mm" color="#000000"/>'
+            + b("top", top) + b("bottom", bottom) + '<hh:diagonal type="SOLID" width="0.1 mm" color="#000000"/></hh:borderFill>')
+hdr = hdr.replace('<hh:borderFills itemCnt="18">', '<hh:borderFills itemCnt="21">')
+hdr = hdr.replace('</hh:borderFills>', bfill(19, "SOLID", "SOLID") + bfill(20, "SOLID", "DASH") + bfill(21, "DASH", "SOLID") + '</hh:borderFills>')
+files["Contents/header.xml"] = hdr.encode("utf-8")
+rdf = files["META-INF/container.rdf"].decode("utf-8").replace('<rdf:Description rdf:about=""><rdf:type',
+      '<rdf:Description rdf:about=""><ns0:hasPart xmlns:ns0="http://www.hancom.co.kr/hwpml/2016/meta/pkg#" rdf:resource="Contents/section1.xml"/></rdf:Description>'
+      '<rdf:Description rdf:about="Contents/section1.xml"><rdf:type rdf:resource="http://www.hancom.co.kr/hwpml/2016/meta/pkg#SectionFile"/></rdf:Description>'
+      '<rdf:Description rdf:about=""><rdf:type')
+files["META-INF/container.rdf"] = rdf.encode("utf-8")
 files["Contents/content.hpf"] = hpf.encode("utf-8")
 if len(sys.argv) > 3:
     files["Preview/PrvImage.png"] = open(sys.argv[3], "rb").read()
 
 with zipfile.ZipFile(out, "w") as o:
-    for info in z.infolist():   # mimetype 은 맨 앞, 압축 없이
-        n = info.filename
+    names = [i.filename for i in z.infolist()]
+    names.insert(names.index("Contents/section0.xml") + 1, "Contents/section1.xml")
+    for n in names:   # mimetype 은 맨 앞, 압축 없이
         o.writestr(n, files[n], compress_type=zipfile.ZIP_STORED if n == "mimetype" else zipfile.ZIP_DEFLATED)
 print("ok", out, len(xml))
