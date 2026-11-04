@@ -78,25 +78,42 @@ const isDone = f => progress(f).every(Boolean);
 let voice = null, rate = store.get("rate", 0.8);
 $("rate").value = rate;
 $("rate").addEventListener("input", e => { rate = +e.target.value; store.set("rate", rate); });
+// 목소리: 여자 친구는 여자 목소리, 남자 친구는 남자 목소리 (높이를 억지로 바꾸지 않아 자연스러워요)
+const VOICE = { female: null, male: null, any: null };
+const FEMALE = /Samantha|Zira|Aria|Jenny|Ava|Allison|Susan|Michelle|Emma|Joanna|Salli|Kendra|Kimberly|Google US English|female/i;
+const MALE = /David|Mark|Guy|Alex|Fred|Aaron|Tom\b|Eric|Christopher|Roger|Steffan|Matthew|Joey|Justin|Davis|Andrew|Brian|Male/i;
 function pickVoice() {
-  const vs = speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
-  voice = vs.find(v => /Google|Samantha|Aria|Jenny|Zira/i.test(v.name)) || vs[0] || null;
+  if (!window.speechSynthesis) return;
+  let vs = [];
+  try { vs = speechSynthesis.getVoices() || []; } catch (e) { return; }
+  const us = vs.filter(v => /^en[-_]US/i.test(v.lang)), en = vs.filter(v => /^en/i.test(v.lang));
+  const find = (list, re) => list.find(v => re.test(v.name) && !(re === FEMALE && MALE.test(v.name)));
+  VOICE.female = find(us, FEMALE) || find(en, FEMALE) || null;
+  VOICE.male = find(us, MALE) || find(en, MALE) || null;
+  VOICE.any = VOICE.female || us[0] || en[0] || null;
 }
-if (window.speechSynthesis) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-// lines: [{ text, who: "me" | friend 객체 }] 를 차례로 말해요
+if (window.speechSynthesis) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
+// lines: [{ text, who }] 를 차례로 말해요
+let speakTimer = null;
 function speak(lines) {
   if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
   if (typeof lines === "string") lines = [{ text: lines }];
-  try {
-    speechSynthesis.cancel();
-    lines.forEach(({ text, who }) => {
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = "en-US"; if (voice) u.voice = voice;
-      u.rate = rate;
-      u.pitch = who && who.gender ? (who.gender === "girl" ? 1.45 : 1.2) : 1;
-      speechSynthesis.speak(u);
-    });
-  } catch (e) { /* 소리가 안 나도 화면은 계속 써요 */ }
+  if (!VOICE.any) pickVoice();          // 처음에 목소리 목록이 늦게 오는 기기
+  try { speechSynthesis.cancel(); } catch (e) {}
+  clearTimeout(speakTimer);
+  // 크롬은 cancel 바로 뒤에 말하면 첫 소리가 끊기거나 이상하게 나올 때가 있어서 아주 잠깐 기다려요
+  speakTimer = setTimeout(() => {
+    try {
+      lines.forEach(({ text, who }) => {
+        const u = new SpeechSynthesisUtterance(text);
+        const g = who && who.gender;
+        const v = g === "boy" ? (VOICE.male || VOICE.any) : g === "girl" ? (VOICE.female || VOICE.any) : VOICE.any;
+        u.lang = (v && v.lang) || "en-US"; if (v) u.voice = v;
+        u.rate = rate; u.pitch = 1; u.volume = 1;
+        speechSynthesis.speak(u);
+      });
+    } catch (e) { /* 소리가 안 나도 화면은 계속 써요 */ }
+  }, 120);
 }
 
 /* ---------- 따라 말하기 (정확도) ---------- */
@@ -244,7 +261,7 @@ function renderGrid() {
   });
 }
 function sayName(f, el) {
-  speak([{ text: f.name, who: f }]);
+  speak([{ text: f.name + ".", who: f }]);
   if (el) { el.classList.remove("speaking"); void el.offsetWidth; el.classList.add("speaking"); }
 }
 function openFriend(id) {
@@ -302,8 +319,9 @@ function renderMine() {
     <div class="mine-r"><h3>💚 ${esc(F.name)}의 기록 <small>워크시트 1쪽에 적어요 · 이 기기에 저장돼요</small></h3>
       <table class="mine-t"><thead><tr><th></th><th>단어</th><th>문장</th></tr></thead><tbody>${rowsHTML}</tbody></table>
       <h3 class="mine-h2">📢 자기소개</h3>
-      <div class="mine-intro">${SAY.intro(F).map(t => line(t, "", myFriend, "a")).join("")}</div></div>
+      <div class="mine-intro">${SAY.intro(F).map(t => line(t, "", myFriend, "a nbl")).join("")}</div></div>
   </article>`;
+  box.querySelectorAll(".nbl .sen").forEach(el => el.classList.add("nb"));
   wireLines(box);
   $("mine-say").addEventListener("click", () => speak(SAY.intro(F).map(text => ({ text, who: myFriend }))));
   $("mine-practice").addEventListener("click", () => {
@@ -464,7 +482,7 @@ function renderQuiz() {
       return `<div class="pr-item" data-i="${i}">
         <span class="pr-no">${i + 1}</span>
         <div class="line a pr-line" data-text="${esc(p.text)}">
-          <div class="sen">${p.text.split(" ").map(w => `<span class="w">${esc(w)}</span>`).join(" ")}</div>
+          <div class="sen nb">${p.text.split(" ").map(w => `<span class="w">${esc(w)}</span>`).join(" ")}</div>
           ${p.ko || p.name ? `<div class="ko">${esc(p.ko)}${p.name ? ` <span class="who-tag">${p.gender === "girl" ? "👧" : "👦"} ${esc(p.name)}</span>` : ""}</div>` : ""}
           <div class="ctl"><button class="rbtn say" type="button" aria-label="듣기">🔊</button><button class="rbtn mic" type="button" aria-label="따라 말하기" ${SR ? "" : "disabled"}>🎤</button><button class="rbtn del" type="button" aria-label="빼기">✕</button></div>
           <div class="res"></div>

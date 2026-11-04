@@ -325,3 +325,31 @@ main { padding-top: 16px; padding-bottom: 24px; }
 .say-name.speaking { animation: namepop .6s ease; background: #ffe066; }
 .say-name.big-name { font-size: 2.1rem; color: var(--purple); background: #f3f0fa; padding: 4px 16px; }
 @keyframes namepop { 30% { transform: scale(1.12); } 100% { transform: scale(1); } }
+
+/* ---------- 영어 공책 (4선) ----------
+ * Andika 글꼴 크기에 맞춘 선: 윗선(키 큰 글자) · 가운데 선(x 높이) · 빨간 밑줄(글자가 앉는 선) · 아랫선(꼬리)
+ * 줄 높이 2em → 윗선 .625em, 가운데 .915em, 밑줄 1.415em, 아랫선 1.655em (Andika 글꼴 크기로 계산)
+ */
+.nb {
+  --nb-line: #9bb7d9; --nb-mid: #c9d8ec; --nb-base: #f08a8a;
+  font-family: "Andika", "Comic Sans MS", var(--en); font-weight: 700; font-size: 30px; line-height: 2em;
+  color: #1f2a44; padding: 0 6px; background-color: #fff; border-radius: 10px;
+  background-image:
+    linear-gradient(to bottom, transparent calc(.625em - 1px), var(--nb-line) calc(.625em - 1px), var(--nb-line) calc(.625em + 1px), transparent calc(.625em + 1px)),
+    linear-gradient(to bottom, transparent calc(.915em - 1px), var(--nb-mid) calc(.915em - 1px), var(--nb-mid) calc(.915em + 1px), transparent calc(.915em + 1px)),
+    linear-gradient(to bottom, transparent calc(1.415em - 1px), var(--nb-base) calc(1.415em - 1px), var(--nb-base) calc(1.415em + 1px), transparent calc(1.415em + 1px)),
+    linear-gradient(to bottom, transparent calc(1.655em - 1px), var(--nb-line) calc(1.655em - 1px), var(--nb-line) calc(1.655em + 1px), transparent calc(1.655em + 1px));
+  background-size: 100% 2em; background-repeat: repeat-y;
+}
+.nb .w { padding: 0; border-radius: 0; background: none !important; }
+.nb .w.hit { color: #2b8a3e; }
+.nb .w.miss { color: #e03131; text-decoration: underline wavy #e03131 2px; text-underline-offset: .3em; }
+.pr-line, .nbl { background: #fff7fb; }
+@media (max-width: 760px) { .nb { font-size: 22px; } }
+@media (max-width: 760px) {
+  .pr-item { grid-template-columns: 1fr; gap: 6px; }
+  .pr-best { flex-direction: row; justify-content: flex-end; align-items: baseline; gap: 8px; }
+  .pr-best.good::before { margin-right: 2px; }
+  .pr-line, .nbl { grid-template-columns: 1fr; }
+  .pr-line .ctl, .nbl .ctl { grid-column: 1; grid-row: auto; justify-content: flex-end; margin-top: 6px; }
+}
