@@ -298,3 +298,19 @@ main { padding-top: 16px; padding-bottom: 24px; }
   .mine-ava { width: 130px; }
   .mine-t td.w { white-space: normal; }
 }
+
+/* ---------- 1쪽 위 내 AI 친구 줄 · 2쪽 ---------- */
+#mybar { margin-bottom: 14px; }
+.mybar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #fff; border: 3px solid #8ce99a; border-radius: 20px; padding: 10px 14px; box-shadow: var(--shadow); font-size: 1.1rem; }
+.mybar.pick { background: #f0fff4; border-style: dashed; animation: pop .35s ease; }
+.mybar.pick b { color: var(--green); }
+.mb-ava { width: 64px; flex: none; }
+.mb-ava svg { width: 100%; height: auto; }
+.mb-t b { font-family: var(--en); font-size: 1.5rem; color: var(--green); margin-left: 4px; }
+.mb-btns { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.mine-l .btn { width: 100%; }
+.mine-h2 { margin-top: 16px !important; }
+.mine-intro { display: flex; flex-direction: column; gap: 6px; }
+.mine-intro .line.a { margin-left: 0; }
+.tabs .tab { white-space: nowrap; }
+@media (max-width: 760px) { .mb-btns { margin-left: 0; width: 100%; } .mb-btns .btn { flex: 1; } }

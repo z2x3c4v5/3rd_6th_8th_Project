@@ -20,6 +20,7 @@
   </div>
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" id="t-meet" aria-selected="true" aria-controls="meet">👫 친구 만나기</button>
+    <button class="tab" role="tab" id="t-my" aria-selected="false" aria-controls="my">💚 내 AI 친구</button>
     <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="quiz">🎤 내 문장 연습</button>
     <button class="tab" role="tab" id="t-words" aria-selected="false" aria-controls="words">💬 친구한테 묻기</button>
   </nav>
@@ -36,7 +37,7 @@
           <button class="btn ghost" id="shuffle">🎲 새 친구 10명</button>
         </div>
       </div>
-      <div id="mine"></div>
+      <div id="mybar"></div>
       <div class="grid" id="grid"></div>
     </div>
 
@@ -53,7 +54,13 @@
     </div>
   </section>
 
-  <!-- ========== 2. 내 문장 연습 ========== -->
+  <!-- ========== 2. 💚 내 AI 친구 ========== -->
+  <section id="my" role="tabpanel" aria-labelledby="t-my" hidden>
+    <p class="lead">내가 고른 AI 친구예요. 이 기록을 보고 <b>워크시트 1쪽</b>을 써요. (이 기기에 저장돼요)</p>
+    <div id="mybox"></div>
+  </section>
+
+  <!-- ========== 3. 내 문장 연습 ========== -->
   <section id="quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
     <div class="bar">
       <p class="lead">내가 <b>☆</b> 로 담은 문장이에요. 🔊 로 듣고 🎤 를 눌러 따라 말해요. <b>80%</b> 넘으면 ✅!</p>
@@ -62,7 +69,7 @@
     <div class="qz" id="qz"></div>
   </section>
 
-  <!-- ========== 3. 친구한테 묻기 ========== -->
+  <!-- ========== 4. 친구한테 묻기 ========== -->
   <section id="words" role="tabpanel" aria-labelledby="t-words" hidden>
     <p class="lead">친구를 만나면 이렇게 물어봐요! 🔊 로 듣고 🎤 를 눌러 질문을 말하면 정확도를 알려 줘요.</p>
     <div class="wd" id="wd"></div>
