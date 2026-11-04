@@ -213,7 +213,7 @@ $("prev").addEventListener("click", () => openFriend((current + COUNT - 1) % COU
 $("next").addEventListener("click", () => openFriend((current + 1) % COUNT));
 $("shuffle").addEventListener("click", () => {
   if (!confirm("새 친구 10명을 만들까요? 지금 친구들은 사라져요.")) return;
-  friends = makeFriends(); save(); ask.reply = null; renderGrid(); toast("🎲 새 친구 10명이 왔어요!");
+  friends = makeFriends(); save(); renderGrid(); toast("🎲 새 친구 10명이 왔어요!");
 });
 
 let lastBag = null, lastCan = null;   // 가장 최근에 물어본 것 (화면에 대화로 보여 줘요)
@@ -374,81 +374,34 @@ function renderQuiz() {
 }
 
 /* =========================================================
- * 3. 친구한테 묻기 — 친구를 만나면 하는 질문 연습
+ * 3. 친구한테 묻기 — 친구를 만나면 하는 질문을 듣고 말하기
  * ========================================================= */
-const ask = { to: 0, item: "pencil", act: "swim", reply: null };
+const ask = { item: "pencil", act: "swim" };
 const QUESTIONS = [
-  { k: "name", ic: "👋", title: "이름 묻기",        q: () => SAY.nameQ(), ko: () => KO.nameQ },
-  { k: "age",  ic: "🎂", title: "나이 묻기",        q: () => SAY.ageQ(),  ko: () => KO.ageQ },
-  { k: "mood", ic: "😊", title: "기분 묻기",        q: () => SAY.moodQ(), ko: () => KO.moodQ },
+  { k: "name", ic: "👋", title: "이름 묻기",          q: () => SAY.nameQ(), ko: () => KO.nameQ },
+  { k: "age",  ic: "🎂", title: "나이 묻기",          q: () => SAY.ageQ(),  ko: () => KO.ageQ },
+  { k: "mood", ic: "😊", title: "기분 묻기",          q: () => SAY.moodQ(), ko: () => KO.moodQ },
   { k: "have", ic: "🎒", title: "가지고 있는지 묻기", q: () => SAY.haveQ(itemById[ask.item]), ko: () => KO.haveQ(itemById[ask.item]) },
   { k: "can",  ic: "💪", title: "할 수 있는지 묻기",  q: () => SAY.canQ(actById[ask.act]),   ko: () => KO.canQ(actById[ask.act]) },
 ];
-// 친구의 대답 (친구 만나기 기록에도 남겨요)
-function answer(f, k) {
-  const F = full(f);
-  if (k === "name") { f.seen.hi = true; return { text: SAY.hi(f), ko: KO.hi(f) }; }
-  if (k === "age")  { f.seen.age = true; return { text: SAY.ageA(F), ko: KO.ageA(F), big: `🎂 ${F.age.n}` }; }
-  if (k === "mood") { f.seen.mood = true; return { text: SAY.moodA(F), ko: KO.moodA(F), big: F.mood.emoji }; }
-  if (k === "have") {
-    const it = itemById[ask.item], yes = f.items.includes(it.id);
-    if (!f.seen.asked.includes(it.id)) f.seen.asked.push(it.id);
-    return { text: yes ? SAY.haveYes(it) : SAY.haveNo(it), ko: yes ? KO.haveYes(it) : KO.haveNo(it), yes };
-  }
-  const a = actById[ask.act], yes = f.actions.includes(a.id);
-  if (!f.seen.askedCan.includes(a.id)) f.seen.askedCan.push(a.id);
-  return { text: yes ? SAY.canYes() : SAY.canNo(), ko: yes ? KO.canYes : KO.canNo, yes };
-}
-function askFriend(k) {
-  const f = friends[ask.to], Q = QUESTIONS.find(x => x.k === k);
-  ask.reply = { k, q: Q.q(), ...answer(f, k) }; save(); afterFind(f);
-  renderAsk();
-  speak([{ text: ask.reply.q }, { text: ask.reply.text, who: f }]);
-  const st = $("ask-stage"); if (st && st.getBoundingClientRect().top < 0) st.scrollIntoView({ behavior: "smooth" });
-}
 function renderWords() {
-  const f = friends[ask.to], r = ask.reply;
-  $("wd").innerHTML = `
-    <div class="ask-who">
-      <h3>1. 누구에게 물어볼까요?</h3>
-      <div class="ask-friends">${friends.map(g => `<button class="af${g.id === ask.to ? " on" : ""}" data-id="${g.id}" type="button">
-        <span class="ava">${avatarSVG(g, g.seen.mood ? g.mood : null)}</span><span>${g.name}</span></button>`).join("")}</div>
-    </div>
-    <div class="ask-stage" id="ask-stage">
-      <div class="ask-ava">${avatarSVG(f, r && r.k === "mood" ? f.mood : (f.seen.mood ? f.mood : null))}</div>
-      <div class="ask-say">
-        <div class="tag"><b>${f.name}</b><span class="gd ${f.gender}">${GENDER[f.gender].emoji} ${GENDER[f.gender].en}</span></div>
-        ${r ? `<div class="chat">${line(r.q, "", null, "q")}${line(r.text, r.ko, f, "a" + (r.yes === true ? " yes" : r.yes === false ? " no" : ""))}</div>${r.big ? `<div class="big-emoji">${r.big}</div>` : ""}`
-            : `<p class="tip">아래에서 질문을 골라 🎤 로 말해 보세요. 잘 말하면 <b>${f.name}</b>(이)가 대답해요!<br>말하기가 어려우면 <b>💬 물어보기</b> 를 눌러도 돼요.</p>`}
-      </div>
-    </div>
-    <h3 class="ask-h">2. 질문하기</h3>
-    <div class="ask-qs">${QUESTIONS.map((Q, i) => `
+  $("wd").innerHTML = `<div class="ask-qs">${QUESTIONS.map((Q, i) => `
       <article class="box ask-q q-${Q.k}" data-k="${Q.k}">
         <h3><span class="qn">${i + 1}</span> ${Q.ic} ${Q.title}</h3>
         ${line(Q.q(), Q.ko(), null, "q")}
-        ${Q.k === "have" ? `<div class="pick">${ITEMS.map(it => `<button class="ch${it.id === ask.item ? " sel" : ""}" data-item="${it.id}" type="button"><span class="pic">${ITEM_PICS[it.id]}</span><span>${it.en}</span></button>`).join("")}</div>` : ""}
-        ${Q.k === "can" ? `<div class="pick">${ACTIONS.map(a => `<button class="ch${a.id === ask.act ? " sel" : ""}" data-act="${a.id}" type="button"><span class="em">${a.emoji}</span><span>${a.en}</span></button>`).join("")}</div>` : ""}
-        <button class="btn ask-go" type="button">💬 ${f.name}에게 물어보기</button>
+        ${Q.k === "have" ? `<p class="tip">빈칸에 넣을 물건을 골라요 👇</p><div class="pick">${ITEMS.map(it => `<button class="ch${it.id === ask.item ? " sel" : ""}" data-item="${it.id}" type="button"><span class="pic">${ITEM_PICS[it.id]}</span><span>${it.en}</span></button>`).join("")}</div>` : ""}
+        ${Q.k === "can" ? `<p class="tip">빈칸에 넣을 행동을 골라요 👇</p><div class="pick">${ACTIONS.map(a => `<button class="ch${a.id === ask.act ? " sel" : ""}" data-act="${a.id}" type="button"><span class="em">${a.emoji}</span><span>${a.en}</span></button>`).join("")}</div>` : ""}
       </article>`).join("")}</div>`;
-  // 🎤 로 질문을 60% 넘게 말하면 친구가 바로 대답해요
-  wireLines($("wd"), (el, acc) => {
-    const card = el.closest(".ask-q");
-    if (card && acc >= 60) setTimeout(() => askFriend(card.dataset.k), 900);
-  });
-  $("wd").querySelectorAll(".af").forEach(b => b.addEventListener("click", () => {
-    ask.to = +b.dataset.id; ask.reply = null; renderAsk(); speak([{ text: SAY.hi(friends[ask.to]), who: friends[ask.to] }]);
-  }));
+  wireLines($("wd"));
   $("wd").querySelectorAll("[data-item]").forEach(b => b.addEventListener("click", () => { ask.item = b.dataset.item; renderAsk(); speak(SAY.haveQ(itemById[ask.item])); }));
   $("wd").querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => { ask.act = b.dataset.act; renderAsk(); speak(SAY.canQ(actById[ask.act])); }));
-  $("wd").querySelectorAll(".ask-go").forEach(b => b.addEventListener("click", () => askFriend(b.closest(".ask-q").dataset.k)));
 }
 // 다시 그려도 스크롤 위치는 그대로
 function renderAsk() { const y = window.scrollY; renderWords(); window.scrollTo(0, y); }
 
 /* ---------- 시작 ---------- */
 // Canva 그림을 찾으면 지금 화면을 다시 그려요
-window.addEventListener("kidpics", () => { const t = TABS.find(t => !$(t).hidden); if (t === "meet") renderGrid(); if (t === "words") renderAsk(); });
+window.addEventListener("kidpics", () => { const t = TABS.find(t => !$(t).hidden); if (t === "meet") renderGrid(); });
 updatePracticeTab();
 const firstTab = store.get("tab", "meet");
 showTab(TABS.includes(firstTab) ? firstTab : "meet");
