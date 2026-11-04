@@ -211,3 +211,28 @@ main { padding-top: 16px; padding-bottom: 24px; }
   .line.q { margin-right: 6%; } .line.a, .reveal { margin-left: 6%; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- ☆ 담기 · 내 문장 연습 ---------- */
+.rbtn.star { color: #f59f00; font-size: 1.1rem; }
+.rbtn.star.on { background: #fff3bf; }
+.intro-go { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 8px; }
+.pr-tools { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.pr-list { display: flex; flex-direction: column; gap: 10px; }
+.pr-item { display: grid; grid-template-columns: 40px 1fr 92px; gap: 10px; align-items: center; background: #fff; border-radius: 20px; padding: 10px 12px; box-shadow: var(--shadow); }
+.pr-item .line { margin: 0; }
+.pr-no { width: 34px; height: 34px; border-radius: 50%; background: var(--purple); color: #fff; display: grid; place-items: center; font-family: var(--en); font-weight: 700; }
+.pr-best { text-align: center; display: flex; flex-direction: column; color: var(--muted); }
+.pr-best b { font-family: var(--en); font-size: 1.5rem; }
+.pr-best.good b { color: var(--green); } .pr-best.mid b { color: var(--orange); } .pr-best.low b { color: var(--red); }
+.pr-best.good::before { content: "✅"; }
+.who-tag { font-family: var(--en); background: #f3f0fa; border-radius: 999px; padding: 0 8px; margin-left: 4px; color: var(--ink); }
+.rbtn.del { color: #adb5bd; }
+.qz-start b { color: var(--pink); }
+@media (max-width: 760px) {
+  .pr-item { grid-template-columns: 1fr 70px; }
+  .pr-no { display: none; }
+}
+
+/* Canva 친구 그림 (표정 6칸 중 한 칸만 보여 줘요) */
+.kid { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: #fff; box-shadow: inset 0 0 0 3px #f1ecfb; }
+.kid img { position: absolute; max-width: none; height: auto; user-select: none; }

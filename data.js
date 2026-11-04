@@ -60,42 +60,31 @@ const ITEMS = [
   { id: "brush",    en: "paintbrush",   ko: "붓",      art: "a" },
 ];
 
-/* ===== 할 수 있는 일 (Can you ~?) ===== */
+/* ===== 할 수 있는 일 (6단원 Can you ~?) =====
+ * 6단원 교과서 표현 중심, 쉬운 것만 · 빈칸은 세 낱말까지
+ */
 const ACTIONS = [
-  { id: "swim",       en: "swim",              ko: "수영하다",          can: "수영할", emoji: "🏊" },
-  { id: "run",        en: "run fast",          ko: "빨리 달리다",       can: "빨리 달릴", emoji: "💨" },
-  { id: "jump",       en: "jump rope",         ko: "줄넘기하다",        can: "줄넘기를 할", emoji: "🪢" },
-  { id: "dance",      en: "dance",             ko: "춤추다",            can: "춤출", emoji: "💃" },
-  { id: "skate",      en: "skate",             ko: "스케이트를 타다",   can: "스케이트를 탈", emoji: "⛸️" },
-  { id: "ski",        en: "ski",               ko: "스키를 타다",       can: "스키를 탈", emoji: "⛷️" },
-  { id: "soccer",     en: "play soccer",       ko: "축구하다",          can: "축구를 할", emoji: "⚽" },
-  { id: "baseball",   en: "play baseball",     ko: "야구하다",          can: "야구를 할", emoji: "⚾" },
-  { id: "badminton",  en: "play badminton",    ko: "배드민턴을 치다",   can: "배드민턴을 칠", emoji: "🏸" },
-  { id: "climb",      en: "climb trees",       ko: "나무에 오르다",     can: "나무에 오를", emoji: "🌳" },
-  { id: "bike",       en: "ride a bike",       ko: "자전거를 타다",     can: "자전거를 탈", emoji: "🚲" },
-  { id: "horse",      en: "ride a horse",      ko: "말을 타다",         can: "말을 탈", emoji: "🐴" },
-  { id: "cartwheel",  en: "do a cartwheel",    ko: "옆돌기를 하다",     can: "옆돌기를 할", emoji: "🤸" },
-  { id: "sing",       en: "sing",              ko: "노래하다",          can: "노래할", emoji: "🎤" },
-  { id: "draw",       en: "draw",              ko: "그림을 그리다",     can: "그림을 그릴", emoji: "🎨" },
-  { id: "whistle",    en: "whistle",           ko: "휘파람을 불다",     can: "휘파람을 불", emoji: "😗" },
-  { id: "cookies",    en: "make cookies",      ko: "쿠키를 만들다",     can: "쿠키를 만들", emoji: "🍪" },
-  { id: "photos",     en: "take photos",       ko: "사진을 찍다",       can: "사진을 찍을", emoji: "📸" },
-  { id: "drums",      en: "play drums",        ko: "드럼을 치다",       can: "드럼을 칠", emoji: "🥁" },
-  { id: "piano",      en: "play the piano",    ko: "피아노를 치다",     can: "피아노를 칠", emoji: "🎹" },
-  { id: "plane",      en: "make a paper plane", ko: "종이비행기를 만들다", can: "종이비행기를 만들", emoji: "✈️" },
-  { id: "cook",       en: "cook",              ko: "요리하다",          can: "요리할", emoji: "🍳" },
-  { id: "ramen",      en: "cook ramen",        ko: "라면을 끓이다",     can: "라면을 끓일", emoji: "🍜" },
-  { id: "chopsticks", en: "use chopsticks",    ko: "젓가락을 쓰다",     can: "젓가락을 쓸", emoji: "🥢" },
-  { id: "dishes",     en: "wash dishes",       ko: "설거지하다",        can: "설거지할", emoji: "🧽" },
-  { id: "english",    en: "speak English",     ko: "영어로 말하다",     can: "영어로 말할", emoji: "🗣️" },
-  { id: "shoes",      en: "tie your shoes",    ko: "신발 끈을 묶다",    can: "신발 끈을 묶을", emoji: "👟" },
-  { id: "count",      en: "count to one hundred", ko: "100까지 세다",  can: "100까지 셀", emoji: "💯" },
+  { id: "swim",      en: "swim",           ko: "수영하다",        can: "수영할",         emoji: "🏊" },
+  { id: "skate",     en: "skate",          ko: "스케이트를 타다", can: "스케이트를 탈",  emoji: "⛸️" },
+  { id: "ski",       en: "ski",            ko: "스키를 타다",     can: "스키를 탈",      emoji: "⛷️" },
+  { id: "run",       en: "run",            ko: "달리다",          can: "달릴",           emoji: "🏃" },
+  { id: "jump",      en: "jump",           ko: "뛰다",            can: "뛸",             emoji: "🦘" },
+  { id: "dance",     en: "dance",          ko: "춤추다",          can: "춤출",           emoji: "💃" },
+  { id: "sing",      en: "sing",           ko: "노래하다",        can: "노래할",         emoji: "🎤" },
+  { id: "draw",      en: "draw",           ko: "그림을 그리다",   can: "그림을 그릴",    emoji: "🎨" },
+  { id: "cook",      en: "cook",           ko: "요리하다",        can: "요리할",         emoji: "🍳" },
+  { id: "runfast",   en: "run fast",       ko: "빨리 달리다",     can: "빨리 달릴",      emoji: "💨" },
+  { id: "jumprope",  en: "jump rope",      ko: "줄넘기하다",      can: "줄넘기를 할",    emoji: "🪢" },
+  { id: "soccer",    en: "play soccer",    ko: "축구하다",        can: "축구를 할",      emoji: "⚽" },
+  { id: "baseball",  en: "play baseball",  ko: "야구하다",        can: "야구를 할",      emoji: "⚾" },
+  { id: "badminton", en: "play badminton", ko: "배드민턴을 치다", can: "배드민턴을 칠",  emoji: "🏸" },
+  { id: "bike",      en: "ride a bike",    ko: "자전거를 타다",   can: "자전거를 탈",    emoji: "🚲" },
+  { id: "piano",     en: "play the piano", ko: "피아노를 치다",   can: "피아노를 칠",    emoji: "🎹" },
 ];
 
 /* ===== 문장 만들기 ===== */
 const withArt = it => (it.art ? it.art + " " : "") + it.en;
-// "Can you tie your shoes?" → 대답할 때는 "I can tie my shoes."
-const mine = en => en.replace(/\byour\b/g, "my");
+const mine = en => en;
 // 여러 개를 이어 말하기: "a pen, a ruler and an apple"
 const listAnd = arr => arr.length < 2 ? arr.join("") : arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1];
 

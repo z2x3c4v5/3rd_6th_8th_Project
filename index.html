@@ -20,7 +20,7 @@
   </div>
   <nav class="tabs" role="tablist">
     <button class="tab" role="tab" id="t-meet" aria-selected="true" aria-controls="meet">👫 친구 만나기</button>
-    <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="quiz">🔍 누구일까요?</button>
+    <button class="tab" role="tab" id="t-quiz" aria-selected="false" aria-controls="quiz">🎤 내 문장 연습</button>
     <button class="tab" role="tab" id="t-words" aria-selected="false" aria-controls="words">📖 주요 표현</button>
   </nav>
 </header>
@@ -30,7 +30,7 @@
   <section id="meet" role="tabpanel" aria-labelledby="t-meet">
     <div id="grid-view">
       <div class="bar">
-        <p class="lead">친구 카드를 눌러 보세요! 질문을 하고 <b>?</b> 카드를 누르면 친구가 대답해요.</p>
+        <p class="lead">친구 카드를 눌러 보세요! 질문을 하고 <b>?</b> 카드를 누르면 친구가 대답해요. 연습할 문장은 <b>☆</b> 로 담아요.</p>
         <div class="bar-r">
           <span class="met" id="met"></span>
           <button class="btn ghost" id="shuffle">🎲 새 친구 10명</button>
@@ -52,10 +52,10 @@
     </div>
   </section>
 
-  <!-- ========== 2. 누구일까요? ========== -->
+  <!-- ========== 2. 내 문장 연습 ========== -->
   <section id="quiz" role="tabpanel" aria-labelledby="t-quiz" hidden>
     <div class="bar">
-      <p class="lead">친구가 자기 이야기를 해요. <b>힌트</b>를 듣고 누구인지 맞혀 보세요! 힌트를 적게 쓸수록 ⭐ 가 많아요.</p>
+      <p class="lead">내가 <b>☆</b> 로 담은 문장이에요. 🔊 로 듣고 🎤 를 눌러 따라 말해요. <b>80%</b> 넘으면 ✅!</p>
       <div class="bar-r"><span class="met" id="score"></span></div>
     </div>
     <div class="qz" id="qz"></div>

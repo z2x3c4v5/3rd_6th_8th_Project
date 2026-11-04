@@ -88,7 +88,31 @@ function faceParts(mood) {
   return cheeks(.45) + dotEyes + `<path d="M53 70Q60 76 67 70" ${st}/>`;
 }
 
+/* ===== Canva 로 만든 친구 그림 =====
+ * img/sheets/kid1.jpg ~ kid10.jpg (kid1~5 남자, kid6~10 여자)
+ * 한 장에 표정 6개 (3칸 × 2줄): 위 = 기본 · happy · sad / 아래 = angry · hungry · tired
+ * 파일이 있으면 그 그림을, 없으면 아래 SVG 얼굴을 써요.
+ */
+const KIDS = { boy: [1, 2, 3, 4, 5], girl: [6, 7, 8, 9, 10] };
+const MOOD_CELL = { neutral: [0, 0], happy: [1, 0], sad: [2, 0], angry: [0, 1], hungry: [1, 1], tired: [2, 1] };
+const ZOOM = 1.08;       // 칸 테두리가 보이지 않게 살짝 확대
+let KID_EXT = null;      // "jpg" | "png" — 그림 파일을 찾으면 정해져요
+(function probe(exts) {
+  if (!exts.length) return;
+  const im = new Image();
+  im.onload = () => { KID_EXT = exts[0]; window.dispatchEvent(new Event("kidpics")); };
+  im.onerror = () => probe(exts.slice(1));
+  im.src = `img/sheets/kid1.${exts[0]}`;
+})(["jpg", "png", "webp"]);
+
+function kidImg(kid, mood) {
+  const [c, r] = MOOD_CELL[mood || "neutral"], pct = v => `${(-((v + 0.5) * ZOOM - 0.5) * 100).toFixed(2)}%`;
+  return `<span class="kid"><img src="img/sheets/kid${kid}.${KID_EXT}" alt="" draggable="false"
+    style="width:${300 * ZOOM}%;left:${pct(c)};top:${pct(r)}"></span>`;
+}
+
 function avatarSVG(f, mood = null) {
+  if (KID_EXT && f.look.kid) return kidImg(f.look.kid, mood);
   const L = f.look, [skin, shade] = LOOKS.skin[L.skin], hair = LOOKS.hair[L.hair], shirt = LOOKS.shirt[L.shirt];
   const [hb, hf] = hairParts(L.style, hair);
   const glasses = L.glasses ? `<g fill="none" stroke="#343a40" stroke-width="2"><circle cx="49" cy="58" r="8"/><circle cx="71" cy="58" r="8"/><path d="M57 58H63M41 57L32 55M79 57L88 55"/></g>` : "";
