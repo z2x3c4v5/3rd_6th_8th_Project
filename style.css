@@ -353,3 +353,18 @@ main { padding-top: 16px; padding-bottom: 24px; }
   .pr-line, .nbl { grid-template-columns: 1fr; }
   .pr-line .ctl, .nbl .ctl { grid-column: 1; grid-row: auto; justify-content: flex-end; margin-top: 6px; }
 }
+
+/* ---------- 낱말 뜻 풍선 ---------- */
+.sen .w { cursor: pointer; transition: background .15s; }
+.sen .w:hover { text-decoration: underline dotted #8e6cf0 2px; text-underline-offset: .2em; }
+.sen .w.picked { background: #fff3bf !important; border-radius: 6px; }
+.wbub {
+  position: absolute; z-index: 40; display: flex; align-items: center; gap: 8px; max-width: min(320px, calc(100vw - 16px));
+  background: #2b2d42; color: #fff; border-radius: 14px; padding: 8px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  font-size: 1rem; line-height: 1.35; animation: pop .2s ease;
+}
+.wbub::after { content: ""; position: absolute; left: var(--ax, 50%); bottom: -7px; margin-left: -7px; border: 7px solid transparent; border-bottom: 0; border-top-color: #2b2d42; }
+.wbub.below::after { bottom: auto; top: -7px; border-top: 0; border-bottom: 7px solid #2b2d42; }
+.wbub b { font-family: var(--en); font-size: 1.3rem; color: #ffe066; white-space: nowrap; }
+.wbub span { font-family: var(--ko); }
+.wb-say { border: 0; background: #fff; border-radius: 50%; width: 32px; height: 32px; flex: none; cursor: pointer; }

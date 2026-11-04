@@ -222,6 +222,7 @@ function cheer() {
 /* ---------- 탭 ---------- */
 const TABS = ["meet", "my", "quiz", "words"];  // my = 💚 내 AI 친구, quiz = 내 문장 연습, words = 친구한테 묻기
 function showTab(id) {
+  closeWordBub();
   TABS.forEach(t => { $(t).hidden = t !== id; $("t-" + t).setAttribute("aria-selected", t === id); });
   store.set("tab", id);
   if (id === "meet") renderGrid();
@@ -531,6 +532,41 @@ function renderWords() {
 }
 // 다시 그려도 스크롤 위치는 그대로
 function renderAsk() { const y = window.scrollY; renderWords(); window.scrollTo(0, y); }
+
+/* ---------- 낱말을 누르면 소리 + 뜻 ---------- */
+let wordBub = null;
+function closeWordBub() { if (wordBub) { wordBub.remove(); wordBub = null; } document.querySelectorAll(".w.picked").forEach(e => e.classList.remove("picked")); }
+function showWord(el) {
+  const m = meaningOf(el.textContent);
+  if (!m.word) return;
+  closeWordBub();
+  el.classList.add("picked");
+  const line = el.closest(".line"), w = line && line.dataset.who;
+  const who = w && GENDER[w] ? { gender: w } : w ? friends[+w] : null;
+  speak([{ text: m.word, who: NAME_KO[m.word] ? who : null }]);
+  wordBub = document.createElement("div");
+  wordBub.className = "wbub"; wordBub.setAttribute("role", "status");
+  wordBub.innerHTML = `<button class="wb-say" type="button" aria-label="다시 듣기">🔊</button><b>${esc(m.word)}</b>` +
+    (m.ko ? `<span>${esc(m.ko)}</span>` : "");
+  document.body.appendChild(wordBub);
+  wordBub.querySelector(".wb-say").addEventListener("click", e => { e.stopPropagation(); speak([{ text: m.word }]); });
+  // 낱말 바로 위(자리가 없으면 아래)에, 화면 밖으로 나가지 않게
+  const r = el.getBoundingClientRect(), b = wordBub.getBoundingClientRect();
+  let left = r.left + r.width / 2 - b.width / 2;
+  left = Math.max(8, Math.min(left, document.documentElement.clientWidth - b.width - 8));
+  let top = r.top - b.height - 10, below = false;
+  if (top < 8) { top = r.bottom + 10; below = true; }
+  wordBub.classList.toggle("below", below);
+  wordBub.style.left = (left + window.scrollX) + "px";
+  wordBub.style.top = (top + window.scrollY) + "px";
+  wordBub.style.setProperty("--ax", (r.left + r.width / 2 - left) + "px");
+}
+document.addEventListener("click", e => {
+  const w = e.target.closest(".sen .w");
+  if (w) { e.stopPropagation(); showWord(w); return; }
+  if (wordBub && !e.target.closest(".wbub")) closeWordBub();
+}, true);
+window.addEventListener("resize", closeWordBub);
 
 /* ---------- 시작 ---------- */
 // Canva 그림을 찾으면 지금 화면을 다시 그려요

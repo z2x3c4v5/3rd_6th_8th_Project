@@ -130,3 +130,63 @@ const KO = {
   canYes:  "응, 할 수 있어.",
   canNo:   "아니, 못 해.",
 };
+
+/* ===== 낱말 뜻 사전 (문장 속 낱말을 누르면 뜻과 소리) ===== */
+const NAME_KO = {
+  Tom: "톰", Sam: "샘", Ben: "벤", Max: "맥스", Jack: "잭", Leo: "레오", Dan: "댄", Tim: "팀", Nick: "닉", Ted: "테드", Bob: "밥", Joe: "조",
+  Amy: "에이미", Lily: "릴리", Mia: "미아", Emma: "에마", Kate: "케이트", Anna: "애나", Jane: "제인", Lucy: "루시", Sue: "수", Ella: "엘라", Ruby: "루비", Zoe: "조이",
+};
+const WORD_KO = {
+  // 묻고 답하기
+  "hi": "안녕 (만났을 때 하는 인사)",
+  "i": "나, 나는",
+  "i'm": "나는 ~이야 (I am 을 줄인 말)",
+  "my": "나의",
+  "you": "너, 너는",
+  "your": "너의",
+  "what's": "무엇이니? (What is 를 줄인 말)",
+  "name": "이름",
+  "how": "어떻게, 얼마나 (How old? 몇 살?)",
+  "are": "~이니, ~이다 (you 와 함께 써요)",
+  "old": "나이가 ~인 (How old ~? 몇 살이니?)",
+  "years": "해, 년 (years old : ~살)",
+  "today": "오늘",
+  "do": "~하니? (Do you ~? 너는 ~하니?)",
+  "don't": "~하지 않아 (do not 을 줄인 말)",
+  "have": "가지고 있다",
+  "can": "~할 수 있다 (Can you ~? 너는 ~할 수 있니?)",
+  "can't": "~할 수 없다, 못 하다 (cannot 을 줄인 말)",
+  "yes": "응, 네",
+  "no": "아니, 아니요",
+  "a": "하나의 (물건 앞에 붙여요)",
+  "an": "하나의 (a, e, i, o, u 소리 앞에 붙여요)",
+  "the": "그 (악기 이름 앞에 붙여요: the piano)",
+  "and": "그리고, ~와",
+  "excellent": "아주 잘했어요!",
+  // 기분
+  "happy": "행복한, 기쁜", "sad": "슬픈", "angry": "화가 난", "hungry": "배고픈", "tired": "피곤한",
+  // 나이
+  "eight": "8, 여덟", "nine": "9, 아홉", "ten": "10, 열", "eleven": "11, 열하나", "twelve": "12, 열둘",
+  // 물건
+  "pen": "펜", "glue": "풀", "stick": "막대 (glue stick : 딱풀)", "ruler": "자", "eraser": "지우개", "notebook": "공책",
+  "crayon": "크레용", "pencil": "연필", "case": "통, 상자 (pencil case : 필통)", "scissors": "가위", "book": "책",
+  "water": "물", "bottle": "병 (water bottle : 물병)", "sticker": "스티커", "keyring": "키링, 열쇠고리", "keycap": "키캡 (키보드 단추)",
+  "slime": "슬라임", "umbrella": "우산", "lunch": "점심", "box": "상자 (lunch box : 도시락)", "teddy": "테디 (teddy bear : 곰 인형)",
+  "bear": "곰", "apple": "사과", "paintbrush": "붓",
+  // 할 수 있는 일
+  "swim": "수영하다", "skate": "스케이트를 타다", "ski": "스키를 타다", "run": "달리다", "jump": "뛰다, 점프하다",
+  "dance": "춤추다", "sing": "노래하다", "draw": "그림을 그리다", "cook": "요리하다", "fast": "빨리",
+  "rope": "줄 (jump rope : 줄넘기하다)", "play": "(운동을) 하다, (악기를) 치다", "soccer": "축구", "baseball": "야구",
+  "badminton": "배드민턴", "ride": "타다", "bike": "자전거", "piano": "피아노",
+};
+const wordKey = w => String(w).toLowerCase().replace(/[’‘]/g, "'").replace(/^[^a-z']+|[^a-z']+$/g, "");
+function meaningOf(word) {
+  const clean = String(word).replace(/[’‘]/g, "'").replace(/^[^A-Za-z']+|[^A-Za-z']+$/g, "");
+  const k = wordKey(word);
+  const name = Object.keys(NAME_KO).find(n => n.toLowerCase() === k);
+  if (name) {
+    const g = NAMES.boy.includes(name) ? "남자" : "여자";
+    return { word: name, ko: `${NAME_KO[name]} (${g} 친구 이름)` };
+  }
+  return { word: clean, ko: WORD_KO[k] || "" };
+}
